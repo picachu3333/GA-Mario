@@ -27,7 +27,7 @@ class MyApp(QWidget):
         #이미지
         label_image = QLabel(self)
 
-        image = np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])
+        image = np.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
         qimage = QImage(image,image.shape[1], image.shape[0],QImage.Format_RGB888)
         pixmap = QPixmap(qimage)
         pixmap = pixmap.scaled(200,200,Qt.IgnoreAspectRatio)
