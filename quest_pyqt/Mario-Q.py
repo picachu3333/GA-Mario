@@ -87,35 +87,37 @@ class MyApp(QWidget):
             self.button[3] = 1
 
         if key == Qt.Key_1:
-            self.screen_size -= 1
+            self.screen_size -= 0.25
             # 창 크기 고정
             self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
             self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+            print(self.screen_size,"size")
 
         if key == Qt.Key_2:
-            self.screen_size += 1
+            self.screen_size += 0.25
             # 창 크기 고정
             self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
             self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+            print(self.screen_size, "size")
 
         if key == Qt.Key_R:
             self.env.reset()
 
         if key == 46:
-            self.game_speed += 20
+            self.game_speed += 10
             if (self.game_speed > 200):
-                self.game_speed = 100
+                self.game_speed = 200
             self.qtimer.stop()
             self.qtimer.start(1000//self.game_speed)
-            print(self.game_speed , "FPS")
+            print(self.game_speed, "speed")
 
         if key == 44:
-            self.game_speed -= 20
+            self.game_speed -= 10
             if (self.game_speed < 10):
                 self.game_speed = 10
             self.qtimer.stop()
             self.qtimer.start(1000 // self.game_speed)
-            print(self.game_speed, "FPS")
+            print(self.game_speed, "speed")
 
     def keyReleaseEvent(self, event):
         key = event.key()
