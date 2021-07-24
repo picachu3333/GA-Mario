@@ -8,5 +8,5 @@ env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
 #새게임 시작
 env.reset()
 
-#키배열 : B, NULL, SELECT, START, U, B, L, R, A
-env.step(np.array([0, 0, 0, 0, 0, 0, 0, 0]))
+#키배열 : B, NULL, SELECT, START, U, D, L, R, A
+env.step(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0]))

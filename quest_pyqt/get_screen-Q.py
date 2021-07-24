@@ -30,6 +30,7 @@ class MyApp(QWidget):
 
         label_image.setPixmap(pixmap)
         label_image.setGeometry(0, 0, screen.shape[0]*2, screen.shape[1]*2)
+
         # 창 띄우기
         self.show()
 
