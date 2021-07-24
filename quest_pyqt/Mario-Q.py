@@ -19,96 +19,138 @@ class MyApp(QWidget):
 
         self.game_speed = 60
 
-        # #화면 가져오기
-        # screen = self.env.get_screen()
-        #
-        # # 창 크기 고정
-        # self.setFixedSize(screen.shape[0] * self.screen_size, screen.shape[1] * self.screen_size)
-        # # 창 제목 설정
+        #화면 가져오기
+        screen = self.env.get_screen()
+
+        # 화면 크기
+        self.width = screen.shape[0]
+        self.height = screen.shape[1]
+
+        # 창 크기 고정
+        self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
+        # 창 제목 설정
         self.setWindowTitle('GA-Mario')
 
         self.label_image = QLabel(self)
-        # self.label_image.setGeometry(0, 0, screen.shape[0] * self.screen_size, screen.shape[1] * self.screen_size)
+        self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
 
         # 타이머 생성
-        qtimer = QTimer(self)
+        self.qtimer = QTimer(self)
         # 타이머에 실행할 함수 연결
-        qtimer.timeout.connect(self.timer)
+        self.qtimer.timeout.connect(self.timer)
         # 1초(1000밀리초)마다 연결된 함수를 실행
-        qtimer.start(1000//self.game_speed)
+        self.qtimer.start(1000//self.game_speed)
 
         # 창 띄우기
         self.show()
 
+
     def timer(self):
         self.env.step(np.array(self.button))
 
-        #화면 가져오기
+        # 화면 가져오기
         screen = self.env.get_screen()
-
-        # 창 크기 고정
-        self.setFixedSize(screen.shape[0] * self.screen_size, screen.shape[1] * self.screen_size)
-        # 창 제목 설정
-        self.setWindowTitle('GA-Mario')
 
         image = np.array(screen)
         qimage = QImage(image, image.shape[1], image.shape[0], QImage.Format_RGB888)
         pixmap = QPixmap(qimage)
-        pixmap = pixmap.scaled(screen.shape[0] * self.screen_size, screen.shape[1] * self.screen_size, Qt.IgnoreAspectRatio)
+        pixmap = pixmap.scaled(self.width * self.screen_size, self.height * self.screen_size, Qt.IgnoreAspectRatio)
 
         self.label_image.setPixmap(pixmap)
-        self.label_image.setGeometry(0, 0, screen.shape[0] * self.screen_size, screen.shape[1] * self.screen_size)
+
 
     def keyPressEvent(self, event):
         key = event.key()
 
         if key == Qt.Key_Up:
             self.button[4] = 1
+
         if key == Qt.Key_Down:
             self.button[5] = 1
+
         if key == Qt.Key_Left:
             self.button[6] = 1
+
         if key == Qt.Key_Right:
             self.button[7] = 1
+
         if key == Qt.Key_Z:
             self.button[8] = 1
+
         if key == Qt.Key_X:
             self.button[0] = 1
+
         if key == Qt.Key_N:
             self.button[2] = 1
+
         if key == Qt.Key_M:
             self.button[3] = 1
+
         if key == Qt.Key_1:
             self.screen_size = 1
+            # 창 크기 고정
+            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
+            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+
         if key == Qt.Key_2:
             self.screen_size = 2
+            # 창 크기 고정
+            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
+            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+
         if key == Qt.Key_3:
             self.screen_size = 3
+            # 창 크기 고정
+            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
+            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+
+        if key == Qt.Key_4:
+            self.screen_size = 4
+            # 창 크기 고정
+            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
+            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
+
         if key == Qt.Key_R:
             self.env.reset()
-        if key == Qt.Key_P:
-            self.game_speed += 30
-        if key == Qt.Key_O:
-            self.game_speed -= 30
 
+        if key == 46:
+            self.game_speed += 20
+            if (self.game_speed > 100):
+                self.game_speed = 100
+            self.qtimer.stop()
+            self.qtimer.start(1000//self.game_speed)
+
+        if key == 44:
+            self.game_speed -= 20
+            if (self.game_speed < 10):
+                self.game_speed = 10
+            self.qtimer.stop()
+            self.qtimer.start(1000 // self.game_speed)
 
     def keyReleaseEvent(self, event):
         key = event.key()
 
         if key == Qt.Key_Up:
             self.button[4] = 0
+
         if key == Qt.Key_Down:
             self.button[5] = 0
+
         if key == Qt.Key_Left:
             self.button[6] = 0
+
         if key == Qt.Key_Right:
             self.button[7] = 0
+
         if key == Qt.Key_Z:
             self.button[8] = 0
+
         if key == Qt.Key_X:
             self.button[0] = 0
+
         if key == Qt.Key_N:
             self.button[2] = 0
+
         if key == Qt.Key_M:
             self.button[3] = 0
 
