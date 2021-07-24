@@ -14,7 +14,7 @@ class MyApp(QWidget):
 
         self.screen_size = 1
 
-        # 키배열 : B, NULL, SELECT, START, U, D, L, R, A
+        # 키배열 : B, NULL, SELECT, START, Up, Down, Left, Right, A
         self.button = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         self.game_speed = 60
