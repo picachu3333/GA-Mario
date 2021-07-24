@@ -19,7 +19,7 @@ class MyApp(QWidget):
 
         self.game_speed = 60
 
-        #화면 가져오기
+        # 화면 가져오기
         screen = self.env.get_screen()
 
         # 화면 크기
