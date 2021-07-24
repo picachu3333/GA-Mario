@@ -87,25 +87,13 @@ class MyApp(QWidget):
             self.button[3] = 1
 
         if key == Qt.Key_1:
-            self.screen_size = 1
+            self.screen_size -= 1
             # 창 크기 고정
             self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
             self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
 
         if key == Qt.Key_2:
-            self.screen_size = 2
-            # 창 크기 고정
-            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
-            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
-
-        if key == Qt.Key_3:
-            self.screen_size = 3
-            # 창 크기 고정
-            self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
-            self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
-
-        if key == Qt.Key_4:
-            self.screen_size = 4
+            self.screen_size += 1
             # 창 크기 고정
             self.setFixedSize(self.width * self.screen_size, self.height * self.screen_size)
             self.label_image.setGeometry(0, 0, self.width * self.screen_size, self.height * self.screen_size)
@@ -115,10 +103,11 @@ class MyApp(QWidget):
 
         if key == 46:
             self.game_speed += 20
-            if (self.game_speed > 100):
+            if (self.game_speed > 200):
                 self.game_speed = 100
             self.qtimer.stop()
             self.qtimer.start(1000//self.game_speed)
+            print(self.game_speed , "FPS")
 
         if key == 44:
             self.game_speed -= 20
@@ -126,6 +115,7 @@ class MyApp(QWidget):
                 self.game_speed = 10
             self.qtimer.stop()
             self.qtimer.start(1000 // self.game_speed)
+            print(self.game_speed, "FPS")
 
     def keyReleaseEvent(self, event):
         key = event.key()
@@ -153,6 +143,7 @@ class MyApp(QWidget):
 
         if key == Qt.Key_M:
             self.button[3] = 0
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
