@@ -58,6 +58,8 @@ class MyApp(QWidget):
 
         self.label_image.setPixmap(pixmap)
 
+        self.update()
+
 
 
     def paintEvent(self,event):
@@ -66,8 +68,21 @@ class MyApp(QWidget):
         # 그리기 시작
         painter.begin(self)
 
-        for i in range():
-            pass
+        # 램
+        ram = self.env.get_ram()
+
+        full_screen_tiles = ram[0x0500:0x069F + 1]
+
+        full_screen_tile_count = full_screen_tiles.shape[0]
+
+        full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
+        full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
+
+        full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1)
+
+        for i in range(full_screen_tiles.shape[0]):
+            for j in range(full_screen_tiles.shape[1]):
+                painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
 
 
     def keyPressEvent(self, event):
