@@ -20,6 +20,6 @@ full_screen_page2_tile = full_screen_tiles[full_screen_tile_count//2:].reshape((
 print(full_screen_page1_tile)
 print(full_screen_page2_tile)
 
-full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1)
+full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
 print(full_screen_tiles)

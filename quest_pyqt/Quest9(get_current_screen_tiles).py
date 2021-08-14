@@ -73,16 +73,50 @@ class MyApp(QWidget):
 
         full_screen_tiles = ram[0x0500:0x069F + 1]
 
+        # 모든 화면의 타일 표시
         full_screen_tile_count = full_screen_tiles.shape[0]
 
         full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
         full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
 
-        full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1)
+        full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
         for i in range(full_screen_tiles.shape[0]):
             for j in range(full_screen_tiles.shape[1]):
-                painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+                if full_screen_tiles[i][j] == 0:
+                    painter.setBrush(QBrush(Qt.gray))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+                else:
+                    painter.setBrush(QBrush(Qt.cyan))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+
+        # 현재 화면의 타일 표시
+
+        # 현재 화면이 속한 페이지 번호
+        current_screen_page = ram[0x071A]
+
+        # 페이지 속 현재 화면 위치
+        screen_position = ram[0x071C]
+
+        # 화면 오프셋
+        screen_offset = (256 * current_screen_page + screen_position) % 512
+
+        # 타일 화면 오프셋
+        screen_tile_offset = screen_offset // 16
+
+        # 현재 화면 추출
+        screen_tiles = np.concatenate((full_screen_tiles, full_screen_tiles), axis=1)[:, screen_tile_offset:screen_tile_offset + 16]
+
+        for i in range(screen_tiles.shape[0]):
+            for j in range(screen_tiles.shape[1]):
+                if screen_tiles[i][j] == 0:
+                    painter.setBrush(QBrush(Qt.gray))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
+                else:
+                    painter.setBrush(QBrush(Qt.cyan))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
+
+
 
 
     def keyPressEvent(self, event):
@@ -129,21 +163,21 @@ class MyApp(QWidget):
         if key == Qt.Key_R:
             self.env.reset()
 
-        # if key == 46:
-        #     self.game_speed += 10
-        #     if (self.game_speed > 200):
-        #         self.game_speed = 200
-        #     self.qtimer.stop()
-        #     self.qtimer.start(1000//self.game_speed)
-        #     print(self.game_speed, "speed")
-        #
-        # if key == 44:
-        #     self.game_speed -= 10
-        #     if (self.game_speed < 10):
-        #         self.game_speed = 10
-        #     self.qtimer.stop()
-        #     self.qtimer.start(1000 // self.game_speed)
-        #     print(self.game_speed, "speed")
+        if key == 46:
+            self.game_speed += 10
+            if (self.game_speed > 200):
+                self.game_speed = 200
+            self.qtimer.stop()
+            self.qtimer.start(1000//self.game_speed)
+            print(self.game_speed, "speed")
+
+        if key == 44:
+            self.game_speed -= 10
+            if (self.game_speed < 10):
+                self.game_speed = 10
+            self.qtimer.stop()
+            self.qtimer.start(1000 // self.game_speed)
+            print(self.game_speed, "speed")
 
     def keyReleaseEvent(self, event):
         key = event.key()
