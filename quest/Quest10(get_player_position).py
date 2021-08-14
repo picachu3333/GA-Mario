@@ -116,6 +116,8 @@ class MyApp(QWidget):
                     painter.setBrush(QBrush(Qt.cyan))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
 
+        ## 플레이어의 타일 표시(현재 화면의 타일에 표시)
+
         # 0x03AD	Player x pos within current screen offset
         # 현재 화면 속 플레이어 x 좌표
         player_position_x = ram[0x03AD]

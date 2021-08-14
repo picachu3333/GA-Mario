@@ -71,9 +71,9 @@ class MyApp(QWidget):
         # 램
         ram = self.env.get_ram()
 
+        ## 모든 화면의 타일 표시
         full_screen_tiles = ram[0x0500:0x069F + 1]
 
-        # 모든 화면의 타일 표시
         full_screen_tile_count = full_screen_tiles.shape[0]
 
         full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
@@ -81,16 +81,52 @@ class MyApp(QWidget):
 
         full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
+        ## 적의 타일 표시(풀스크린(모든화면 타일)에서 표시)
+
+        # 0x000F-0x0013	Enemy drawn? Max 5 enemies at once.
+        # 0 - No
+        # 1 - Yes (not so much drawn as "active" or something)
+        enemy_drawn = ram[0x000F:0x0013 + 1]
+
+        # 0x006E-0x0072	Enemy horizontal position in level
+        # 자신이 속한 화면 페이지 번호
+        enemy_horizon_position = ram[0x006E:0x0072 + 1]
+
+        # 0x0087-0x008B	Enemy x position on screen
+        # 자신이 속한 페이지 속 x 좌표
+        enemy_screen_position_x = ram[0x0087:0x008B + 1]
+
+        # 0x00CF-0x00D3	Enemy y pos on screen
+        enemy_position_y = ram[0x00CF:0x00D3 + 1]
+
+        # 적 x 좌표
+        enemy_position_x = (enemy_horizon_position * 256 + enemy_screen_position_x) % 512
+
+        # 적 타일 좌표
+        enemy_tile_position_x = (enemy_position_x + 8) // 16
+        enemy_tile_position_y = (enemy_position_y - 8) // 16 - 1
+
+        for i in range(len(enemy_drawn)):
+            if enemy_drawn[i] == 1:
+                # painter.setBrush(QBrush(Qt.red))
+                # painter.drawRect(self.width * self.screen_size + 16 * enemy_tile_position_x[i], 0 + 16 * enemy_tile_position_y[i], 16, 16)
+                full_screen_tiles[enemy_tile_position_y[i]][enemy_tile_position_x[i]] = -1
+
         for i in range(full_screen_tiles.shape[0]):
             for j in range(full_screen_tiles.shape[1]):
                 if full_screen_tiles[i][j] == 0:
                     painter.setBrush(QBrush(Qt.lightGray))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+
+                elif full_screen_tiles[i][j] == -1:
+                    painter.setBrush(QBrush(Qt.red))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+
                 else:
                     painter.setBrush(QBrush(Qt.cyan))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
 
-        # 현재 화면의 타일 표시
+        ## 현재 화면의 타일 표시
 
         # 현재 화면이 속한 페이지 번호
         current_screen_page = ram[0x071A]
@@ -110,11 +146,36 @@ class MyApp(QWidget):
         for i in range(screen_tiles.shape[0]):
             for j in range(screen_tiles.shape[1]):
                 if screen_tiles[i][j] == 0:
-                    painter.setBrush(QBrush(Qt.gray))
+                    painter.setBrush(QBrush(Qt.lightGray))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
+
+                elif screen_tiles[i][j] == -1:
+                    painter.setBrush(QBrush(Qt.red))
+                    painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
+
                 else:
                     painter.setBrush(QBrush(Qt.cyan))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 250 + 16 * i, 16, 16)
+
+        ## 플레이어의 타일 표시(현재 화면의 타일에 표시)
+
+        # 0x03AD	Player x pos within current screen offset
+        # 현재 화면 속 플레이어 x 좌표
+        player_position_x = ram[0x03AD]
+        # 0x03B8	Player y pos within current screen
+        # 현재 화면 속 플레이어 y좌표
+        player_position_y = ram[0x03B8]
+
+        # 타일 좌표로 변환 (고해상도의 좌표를 타일에 표현하기 위해 16*16의 픽셀을 한 타일에 표현하기 위해서 나눠줌)
+        player_tile_position_x = (player_position_x + 8) // 16
+        player_tile_position_y = (player_position_y + 8) // 16 - 1
+
+        painter.setBrush(QBrush(Qt.blue))
+        painter.drawRect(self.width * self.screen_size + 16 * player_tile_position_x,250 + 16 * player_tile_position_y, 16, 16)
+
+
+
+
 
 
 
