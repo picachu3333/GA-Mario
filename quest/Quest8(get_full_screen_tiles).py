@@ -82,9 +82,11 @@ class MyApp(QWidget):
 
         for i in range(full_screen_tiles.shape[0]):
             for j in range(full_screen_tiles.shape[1]):
-                if full_screen_tiles[i][j] == 0:
-                    painter.setBrush(QBrush(Qt.gray))
+
+                if full_screen_tiles[i][j] == 0x00:
+                    painter.setBrush(QBrush(Qt.lightGray))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
+
                 else:
                     painter.setBrush(QBrush(Qt.cyan))
                     painter.drawRect(self.width * self.screen_size + 16 * j, 0 + 16 * i, 16, 16)
