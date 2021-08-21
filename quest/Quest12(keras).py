@@ -1,8 +1,11 @@
 import sys, retro
-from PyQt5.QtGui import QImage, QPixmap, QPainter, QPen, QBrush, QColor
+from PyQt5.QtGui import QImage, QPixmap, QPainter, QBrush
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 import numpy as np
+import tensorflow as tf
+
+
 
 class MyApp(QWidget):
     def __init__(self):
@@ -39,11 +42,15 @@ class MyApp(QWidget):
         # 타이머에 실행할 함수 연결
         self.qtimer.timeout.connect(self.timer)
         # 1초(1000밀리초)마다 연결된 함수를 실행
-        self.qtimer.start(1000//self.game_speed)
+        self.qtimer.start(1000 // self.game_speed)
+
+        ##
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Dense(9, input_shape=(13 * 16,), activation='relu'),
+            tf.keras.layers.Dense(6, activation='sigmoid')])
 
         # 창 띄우기
         self.show()
-
 
     def timer(self):
         self.env.step(np.array(self.button))
@@ -60,9 +67,7 @@ class MyApp(QWidget):
 
         self.update()
 
-
-
-    def paintEvent(self,event):
+    def paintEvent(self, event):
         # 그리기 도구
         painter = QPainter()
         # 그리기 시작
@@ -140,7 +145,8 @@ class MyApp(QWidget):
         screen_tile_offset = screen_offset // 16
 
         # 현재 화면 추출
-        screen_tiles = np.concatenate((full_screen_tiles, full_screen_tiles), axis=1)[:, screen_tile_offset:screen_tile_offset + 16]
+        screen_tiles = np.concatenate((full_screen_tiles, full_screen_tiles), axis=1)[:,
+                       screen_tile_offset:screen_tile_offset + 16]
 
         for i in range(screen_tiles.shape[0]):
             for j in range(screen_tiles.shape[1]):
@@ -170,14 +176,20 @@ class MyApp(QWidget):
         player_tile_position_y = (player_position_y + 8) // 16 - 1
 
         painter.setBrush(QBrush(Qt.blue))
-        painter.drawRect(self.width * self.screen_size + 16 * player_tile_position_x,250 + 16 * player_tile_position_y, 16, 16)
+        painter.drawRect(self.width * self.screen_size + 16 * player_tile_position_x, 250 + 16 * player_tile_position_y,
+                         16, 16)
 
+        # ai 움직이기
+        predict = self.model.predict(np.array([screen_tiles.flatten()]))[0]
+        result = (predict > 0.5).astype(np.int)
+        print(result)
 
-
-
-
-
-
+        self.button[4] = result[0]
+        self.button[5] = result[1]
+        self.button[6] = result[2]
+        self.button[7] = result[3]
+        self.button[8] = result[4]
+        self.button[0] = result[5]
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -228,7 +240,7 @@ class MyApp(QWidget):
             if self.game_speed > 200:
                 self.game_speed = 200
             self.qtimer.stop()
-            self.qtimer.start(1000//self.game_speed)
+            self.qtimer.start(1000 // self.game_speed)
             print(self.game_speed, "speed")
 
         if key == 44:
